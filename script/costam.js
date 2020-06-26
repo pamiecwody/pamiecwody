@@ -104,10 +104,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     case 12:
     case 52:
     case 54:
-      break;
-    default:
-      body.style['overflow-y'] = 'hidden';
+      return;
   }
+  body.style['overflow-y'] = 'hidden';
 });
 
 window.addEventListener('load', function (event) {
