@@ -35,7 +35,7 @@ function resize(haxx) {
 function getCurrentSlideFileName() {
   var path = window.location.pathname;
   var pathSplit = path.split("/");
- return pathSplit.pop();
+  return pathSplit.pop();
 }
 
 function getCurrentSlideIndex() {
@@ -47,10 +47,10 @@ function getSlideFileNameForIndex(slideIndex) {
 }
 
 function switchSlide(offset) {
-    var newIndex = getCurrentSlideIndex() + offset;
-    if (slideExist(newIndex)) {
-      window.open(getSlideFileNameForIndex(newIndex), '_self');
-    }
+  var newIndex = getCurrentSlideIndex() + offset;
+  if (slideExist(newIndex)) {
+    window.open(getSlideFileNameForIndex(newIndex), '_self');
+  }
 }
 
 function slideExist(slideIndex) {
@@ -58,23 +58,23 @@ function slideExist(slideIndex) {
 }
 
 function addHamburgerMenu() {
-   var button = document.createElement('button');
-   button.style['position'] = 'absolute';
-   button.style['top'] = '10px';
-   button.style['left'] = '10px';
-   button.style['background-color'] = '#777';
-   button.style['color'] = 'white';
-   button.style['cursor'] = 'pointer';
-   button.style['padding'] = '5px';
-   button.style['width'] = '30px';
-   button.style['border'] = 'none';
-   button.style['border-radius'] = '3px';
-   button.style['text-align'] = 'center';
-   button.style['outline'] = 'none';
-   button.style['font-size'] = '15px';
-   button.innerText = '☰';
+  var button = document.createElement('button');
+  button.style['position'] = 'absolute';
+  button.style['top'] = '10px';
+  button.style['left'] = '10px';
+  button.style['background-color'] = '#777';
+  button.style['color'] = 'white';
+  button.style['cursor'] = 'pointer';
+  button.style['padding'] = '5px';
+  button.style['width'] = '30px';
+  button.style['border'] = 'none';
+  button.style['border-radius'] = '3px';
+  button.style['text-align'] = 'center';
+  button.style['outline'] = 'none';
+  button.style['font-size'] = '15px';
+  button.innerText = '☰';
 
-   document.body.parentElement.appendChild(button);
+  document.body.parentElement.appendChild(button);
 }
 
 document.onkeyup = function (e) {
@@ -95,7 +95,7 @@ document.onkeyup = function (e) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", function(event) {
+document.addEventListener("DOMContentLoaded", function (event) {
   var body = document.body;
   body.style['display'] = 'none';
   body.style['overflow-x'] = 'hidden';
@@ -104,12 +104,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
     case 12:
     case 52:
     case 54:
+      break;
+    default:
       body.style['overflow-y'] = 'hidden';
-    break;
   }
 });
 
-window.addEventListener('load', function (event)  {
+window.addEventListener('load', function (event) {
   document.body.style['display'] = '';
   resize(false);
   window.scrollTo(0, 0);
