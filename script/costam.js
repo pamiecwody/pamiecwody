@@ -39,7 +39,7 @@ function getCurrentSlideFileName() {
 }
 
 function getCurrentSlideIndex() {
-  return Number.parseInt(getCurrentSlideFileName().match(/(\d+)\.xhtml$/));
+  return parseInt(getCurrentSlideFileName().match(/(\d+)\.xhtml$/));
 }
 
 function getSlideFileNameForIndex(slideIndex) {
