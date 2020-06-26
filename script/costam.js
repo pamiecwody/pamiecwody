@@ -100,13 +100,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
   body.style['display'] = 'none';
   body.style['overflow-x'] = 'hidden';
   var currentSlideIndex = getCurrentSlideIndex();
-  switch (currentSlideIndex) {
-    case 12:
-    case 52:
-    case 54:
-      return;
+  if (currentSlideIndex != 12 && currentSlideIndex != 52 && currentSlideIndex != 54) {
+    body.style['overflow-y'] = 'hidden';
   }
-  body.style['overflow-y'] = 'hidden';
 });
 
 window.addEventListener('load', function (event) {
