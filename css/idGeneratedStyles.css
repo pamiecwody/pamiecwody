@@ -6224,37 +6224,37 @@
 	font-family:"Myriad Pro";
 	font-style:normal;
 	font-weight:bold;
-	src : url("../font/MyriadPro-Bold.otf");
+	src : url("../font/MyriadPro-Bold.otf") format('opentype');
 }
 @font-face {
 	font-family:"Myriad Pro";
 	font-style:italic;
 	font-weight:bold;
-	src : url("../font/MyriadPro-BoldIt.otf");
+	src : url("../font/MyriadPro-BoldIt.otf") format('opentype');
 }
 @font-face {
 	font-family:"Myriad Pro";
 	font-style:oblique;
 	font-weight:bold;
-	src : url("../font/MyriadPro-BoldIt.otf");
+	src : url("../font/MyriadPro-BoldIt.otf") format('opentype');
 }
 @font-face {
 	font-family:"Myriad Pro";
 	font-style:italic;
 	font-weight:normal;
-	src : url("../font/MyriadPro-It.otf");
+	src : url("../font/MyriadPro-It.otf") format('opentype');
 }
 @font-face {
 	font-family:"Myriad Pro";
 	font-style:oblique;
 	font-weight:normal;
-	src : url("../font/MyriadPro-It.otf");
+	src : url("../font/MyriadPro-It.otf") format('opentype');
 }
 @font-face {
 	font-family:"Myriad Pro";
 	font-style:normal;
 	font-weight:normal;
-	src : url("../font/MyriadPro-Regular.otf");
+	src : url("../font/MyriadPro-Regular.otf") format('opentype');
 }
 @font-face {
 	font-family:Tinos;

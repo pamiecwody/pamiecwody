@@ -1,5 +1,5 @@
 function resize(haxx) {
-  var bodyElement = document.getElementsByTagName('body')[0];
+  var bodyElement = document.body;
 
   var windowWidth = window.innerWidth;
   var windowHeight = window.innerHeight;
@@ -57,6 +57,26 @@ function slideExist(slideIndex) {
   return slideIndex > 0 && slideIndex <= 77;
 }
 
+function addHamburgerMenu() {
+   var button = document.createElement('button');
+   button.style['position'] = 'absolute';
+   button.style['top'] = '10px';
+   button.style['left'] = '10px';
+   button.style['background-color'] = '#777';
+   button.style['color'] = 'white';
+   button.style['cursor'] = 'pointer';
+   button.style['padding'] = '5px';
+   button.style['width'] = '30px';
+   button.style['border'] = 'none';
+   button.style['border-radius'] = '3px';
+   button.style['text-align'] = 'center';
+   button.style['outline'] = 'none';
+   button.style['font-size'] = '15px';
+   button.innerText = '☰';
+
+   document.body.parentElement.appendChild(button);
+}
+
 document.onkeyup = function (e) {
   e = e || window.event;
   switch (e.keyCode) {
@@ -76,7 +96,7 @@ document.onkeyup = function (e) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  var body = document.querySelector('body');
+  var body = document.body;
   body.style['display'] = 'none';
   body.style['overflow-x'] = 'hidden';
   var currentSlideIndex = getCurrentSlideIndex();
@@ -90,9 +110,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 });
 
 window.addEventListener('load', function (event)  {
-  document.querySelector('body').style['display'] = '';
+  document.body.style['display'] = '';
   resize(false);
   window.scrollTo(0, 0);
+  addHamburgerMenu();
 });
 window.addEventListener('resize', function (event) {
   resize(false);
