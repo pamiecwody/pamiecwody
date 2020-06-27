@@ -34,11 +34,11 @@ function resize(haxx) {
   bodyElement.style['transform'] = 'translateX(' + xOffset + 'px) translateY(' + yOffset + 'px) scale(' + scale + ')';
 }
 
-function getUrlParameter(location, name) {
+function getUrlParameter(name) {
   name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
   var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-  var results = regex.exec(location);
-  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  var results = regex.exec(window.location.search);
+  return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
 function addCssStyle(css) {
@@ -71,14 +71,35 @@ function switchSlide(offset) {
   openSlide(getCurrentSlideIndex() + offset);
 }
 
-function openSlide(index) {
+function openSlide(index, button) {
   if (slideExist(index)) {
     var path = getSlideFileNameForIndex(index);
+    var queryParams = [];
     if (isMenuOpen()) {
-      path += '?openSideMenu=true';
+      queryParams.push('openSideMenu=true');
+    }
+    if (isButtonContainerVisible()) {
+      queryParams.push('showButtons=true');
+    } else {
+      queryParams.push('showButtons=false');
+    }
+    if (queryParams.length > 0) {
+      path += '?';
+      path += queryParams.join("&");
     }
     window.open(path, '_self');
   }
+}
+
+function addQuestionMarkToPath(path) {
+  if (path.indexOf('?') === -1) {
+    return path += '?';
+  }
+}
+
+function isButtonContainerVisible() {
+  var buttonContainer = document.querySelector('.buttonContainer');
+  return buttonContainer !== null && buttonContainer !== undefined && buttonContainer.style['opacity'] === '1';
 }
 
 function slideExist(slideIndex) {
@@ -98,14 +119,14 @@ function isLocal() {
   return window.location.href.startsWith('file');
 }
 
-function createHamburgerButton(menu) {
-  var button = createElement(document.body.parentElement, 'button');
+function createHamburgerButton(additionalContentElement, menu) {
+  var button = createElement(additionalContentElement, 'button');
   button.className = 'hamburgerButton';
   button.innerText = '☰';
 
-  menu.style['visibility'] = 'hidden'
+  menu.style['display'] = 'none'
   menu.style['opacity'] = '0'
-  menu.style['transition'] = 'visibility 0.1s linear, opacity 0.1s linear';
+  menu.style['transition'] = 'opacity 0.1s linear';
   button.addEventListener("click", function () {
     if (isMenuOpen()) {
       closeSideMenu();
@@ -117,30 +138,21 @@ function createHamburgerButton(menu) {
 
 function openSideMenu() {
   var menu = document.querySelector('.sideMenu');
-  menu.style['visibility'] = '';
+  menu.style['display'] = '';
   menu.style['opacity'] = '1';
 }
 
 function closeSideMenu() {
   var menu = document.querySelector('.sideMenu');
   menu.style['opacity'] = '0';
-  menu.style['visibility'] = 'hidden';
-}
-
-function createMenu() {
-  var menu = createElement(document.body.parentElement, 'div');
-  menu.className = 'sideMenu';
-  menu.style['visibility'] = 'hidden';
-  menu.style['opacity'] = '0';
-  var menuContent = createElement(menu, 'div');
-  menuContent.className = 'menuContent';
-  createHamburgerButton(menu);
-  return menu;
+  setTimeout(function () {
+    menu.style['display'] = 'none';
+  }, 100);
 }
 
 function isMenuOpen() {
   var sideMenu = document.querySelector('.sideMenu');
-  return sideMenu !== null && sideMenu !== undefined && !(sideMenu.style['visibility'] === 'hidden');
+  return sideMenu !== null && sideMenu !== undefined && !(sideMenu.style['display'] === 'none');
 }
 
 function addMenuHeader(menuElement, text) {
@@ -171,26 +183,30 @@ function addMenuFooter(menuElement, text) {
 }
 
 function addMenuItem(menuElement, text, iconClassName, slideIndex) {
-  var menuItem = createElement(menuElement.querySelector('.menuContent'), 'p');
+  var menuItem = createElement(menuElement.querySelector('.menuContent'), 'a');
   menuItem.className = 'menuItem';
+  menuItem.href = getSlideFileNameForIndex(slideIndex);
+  menuItem.onclick = function (e) {
+    e.preventDefault();
+    openSlide(slideIndex);
+  };
 
   var menuItemIcon = createElement(menuItem, 'div');
   menuItemIcon.className = 'icon ' + iconClassName;
 
-  var link = createElement(menuItem, 'a');
-  link.href = getSlideFileNameForIndex(slideIndex);
-  link.onclick = function (e) {
-    e.preventDefault();
-    openSlide(slideIndex);
-  };
-  link.innerText = text;
+  var textElement = createElement(menuItem, 'div');
+  textElement.innerText = text;
 
   return menuItem;
 }
 
-function addSideMenu() {
-  var menu = createMenu();
+function createMenu(additionalContentElement) {
+  var menu = createElement(additionalContentElement, 'div');
+  menu.className = 'sideMenu';
   addMenuHeader(menu, 'pamięć wody');
+  var menuContent = createElement(menu, 'div');
+  menuContent.className = 'menuContent';
+  createHamburgerButton(additionalContentElement, menu);
   addMenuItem(menu, 'sieci dróg wodnych w Europie', 'sieci', 3);
   addMenuItem(menu, 'Kanał Mazurski', 'kanal', 10);
   addMenuItem(menu, 'historia i tożsamość', 'historia', 25);
@@ -202,6 +218,56 @@ function addSideMenu() {
   addMenuItem(menu, 'szlak turystyki angażującej', 'szlak', 59);
   addMenuItem(menu, 'kontakt', 'kontakt', 86);
   addMenuFooter(menu, "© Alicja Maculewicz 2020");
+  return menu;
+}
+
+function createArrowButton(buttonContainer, text, className, slideOffset) {
+  var button = createElement(buttonContainer, 'div');
+  button.className = 'arrowButton ' + className;
+  button.innerText = text;
+  button.onclick = function () {
+    switchSlide(slideOffset);
+  }
+}
+
+function createArrowButtons(additionalContent) {
+  var buttonContainer = createElement(additionalContent, 'div');
+  buttonContainer.className = 'buttonContainer';
+  createArrowButton(buttonContainer, '❮', 'left', -1);
+  createArrowButton(buttonContainer, '❯', 'right', 1);
+
+  var timer = null;
+  document.addEventListener("mousemove", function () {
+    buttonContainer.style['opacity'] = '1';
+    if (timer != null) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(function () {
+      if (buttonContainer.style['opacity'] === '1') {
+        buttonContainer.style['opacity'] = '0';
+      }
+    }, 5000);
+  });
+
+  var showButtons = getUrlParameter('showButtons');
+  if (showButtons === 'false') {
+    buttonContainer.style['opacity'] = '0';
+  } else if (showButtons === 'true') {
+    timer = setTimeout(function () {
+      buttonContainer.style['opacity'] = '0';
+    }, 5000);
+  } else {
+    timer = setTimeout(function () {
+      buttonContainer.style['opacity'] = '0';
+    }, 1000);
+  }
+}
+
+function createAdditionalContent() {
+  var additionalContent = createElement(document.body.parentElement, 'div');
+  additionalContent.className = 'additionalContent';
+  createMenu(additionalContent);
+  createArrowButtons(additionalContent);
 }
 
 
@@ -211,6 +277,17 @@ function setPageTitle() {
 
 function createCssStyles() {
   addCssStyle(`
+.additionalContent {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
 .hamburgerButton {
   position: fixed;
   font-size: 24px;
@@ -224,6 +301,7 @@ function createCssStyles() {
   text-align: center;
   outline: none;
   z-index: 1;
+  pointer-events: all;
 }
 
 .menuItem {
@@ -284,14 +362,9 @@ function createCssStyles() {
 }
 
 .menuFooter {
-  position: fixed;
-  top: calc(100vh - 56px);
-  left: 0px;
-  width: calc(100% - 10px);
-  height: 56px;
   padding: 0px 10px 10px 0px; 
   background-color: rgb(250, 250, 250, 0.5);
-  border-top: 1px solid rgb(180, 180, 180, 1.0);
+  border: 1px solid rgb(180, 180, 180, 1.0);
   font-family: Myriad Pro;
   font-size: 12px;
   text-transform: uppercase;
@@ -308,17 +381,13 @@ function createCssStyles() {
 }
 
 .menuHeader {
-  position: fixed;
   font-family: Frank Ruhl Libre Black;
   font-size: 22px;
-  top: 0px;
-  left: 0px;
-  width: calc(100% - 55px);
   height: 45px;
   line-height: 32px;
   padding: 10px 10px 0px 46px; 
   background-color: rgb(200, 200, 200, 0.1);
-  border-bottom: 1px solid rgb(180, 180, 180, 1.0);
+  border: 1px solid rgb(180, 180, 180, 1.0);
   z-index: 1;
 }
 
@@ -327,22 +396,52 @@ function createCssStyles() {
   font-weight: normal;
   font-size: 18px;
   line-height: 3.0;
-  position: fixed;
-  top: 0px;
-  left: 0px;
   height: 100%;
-  min-width: 10%;
-  width: 280px;
-  padding: 55px 0px 0px 0px;
-  border-right: 1px solid rgb(180, 180, 180, 1.0);
+  min-width: 290px;
   background-color: rgb(255, 255, 255, 0.5);
   backdrop-filter: blur(7px);
+  pointer-events: all;
 }
 
 .menuContent {
   overflow-y: auto;
   height: calc(100% - 120px);
   padding: 0px 10px 10px 0px;
+  border-left: 1px solid rgb(180, 180, 180, 1.0);
+  border-right: 1px solid rgb(180, 180, 180, 1.0);
+}
+
+.buttonContainer {
+  opacity: 1;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: all;
+  transition: opacity ease-in 0.2s;
+}
+
+.arrowButton {
+  color: white;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(84, 84, 84, 0.28);
+  backdrop-filter: blur(2px);
+  border-radius: 60px;
+  text-align: center;
+  line-height: 50px;
+  font-size: 33px;
+  user-select: none;
+  margin: 40px 15px 40px 15px;
+  cursor: pointer;
+}
+
+.arrowButton:hover{
+  width: 70px;
+  height: 70px;
+  margin: 30px 5px 10px 5px;
+  line-height: 70px;
+  font-size: 44px;
+  transition: all 0.2s;
 }
 `);
   // menu.style['display']='flex';
@@ -392,8 +491,8 @@ window.addEventListener('load', function (event) {
   resize(false);
   window.scrollTo(0, 0);
   if (!isLocal()) {
-    addSideMenu();
-    if (getUrlParameter(window.location.search, 'openSideMenu') === 'true') {
+    createAdditionalContent();
+    if (getUrlParameter('openSideMenu') === 'true') {
       openSideMenu();
     }
   }
