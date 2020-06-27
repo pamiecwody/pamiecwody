@@ -61,18 +61,23 @@ function getCurrentSlideIndex() {
   return parseInt(getCurrentSlideFileName().match(/(\d+)\.xhtml$/));
 }
 
-function getSlideFileNameForIndex(slideIndex, fromMenu) {
+function getSlideFileNameForIndex(slideIndex) {
   var path = window.location.pathname.replace(/(\d+)\.xhtml$/, slideIndex + '.xhtml');
-  if (fromMenu) {
-    path += '?openSideMenu=true';
-  }
   return path;
 }
 
+
 function switchSlide(offset) {
-  var newIndex = getCurrentSlideIndex() + offset;
-  if (slideExist(newIndex)) {
-    window.open(getSlideFileNameForIndex(newIndex), '_self');
+  openSlide(getCurrentSlideIndex() + offset);
+}
+
+function openSlide(index) {
+  if (slideExist(index)) {
+    var path = getSlideFileNameForIndex(index);
+    if (isMenuOpen()) {
+      path += '?openSideMenu=true';
+    }
+    window.open(path, '_self');
   }
 }
 
@@ -85,7 +90,6 @@ function createElement(parentElement, tagName) {
   parentElement.appendChild(element);
   return element;
 }
-
 
 function isLocal() {
   if (window.location.href.match('.*/dev/.*')) {
@@ -103,10 +107,10 @@ function createHamburgerButton(menu) {
   menu.style['opacity'] = '0'
   menu.style['transition'] = 'visibility 0.1s linear, opacity 0.1s linear';
   button.addEventListener("click", function () {
-    if (menu.style['opacity'] == '0') {
-      openSideMenu();
-    } else {
+    if (isMenuOpen()) {
       closeSideMenu();
+    } else {
+      openSideMenu();
     }
   });
 }
@@ -132,44 +136,70 @@ function createMenu() {
   return menu;
 }
 
+function isMenuOpen() {
+  var sideMenu = document.querySelector('.sideMenu');
+  return sideMenu !== null && sideMenu !== undefined && !(sideMenu.style['visibility'] === 'hidden');
+}
+
 function addMenuHeader(menuElement, text) {
   var header = createElement(menuElement, 'p');
   header.className = 'menuHeader';
-  header.innerText = text;
+
+  var link = createElement(header, 'a');
+  link.href = getSlideFileNameForIndex(1);
+  link.onclick = function (e) {
+    e.preventDefault();
+    openSlide(1);
+  };
+  link.innerText = text;
 }
 
 function addMenuFooter(menuElement, name, year) {
-  var footer = createElement(menuElement, 'p');
+  var footer = createElement(menuElement, 'div');
   footer.className = 'menuFooter';
-  footer.innerText = name;
+
+  var footerContent = createElement(footer, 'div');
+  footerContent.className = 'menuFooterContent';
+
+  var menuItemIcon = createElement(footerContent, 'div');
+  menuItemIcon.className = 'icon ala';
+
+  var text = createElement(footerContent, 'p');
+  text.innerText = name;
 }
 
-function addMenuItem(menuElement, text, url) {
+function addMenuItem(menuElement, text, iconClassName, slideIndex) {
   var menuItem = createElement(menuElement, 'p');
-  if (url !== undefined) {
-    var link = createElement(menuItem, 'a');
-    link.href = url;
-    link.innerText = text;
-  } else {
-    menuItem.innerText = text;
-  }
+  menuItem.className = 'menuItem';
+
+  var menuItemIcon = createElement(menuItem, 'div');
+  menuItemIcon.className = 'icon ' + iconClassName;
+
+  var link = createElement(menuItem, 'a');
+  link.href = getSlideFileNameForIndex(slideIndex);
+  link.onclick = function (e) {
+    e.preventDefault();
+    openSlide(slideIndex);
+  };
+  link.innerText = text;
+
   return menuItem;
 }
 
 function addSideMenu() {
   var menu = createMenu();
   addMenuHeader(menu, 'pamięć wody');
-  addMenuItem(menu, 'start', getSlideFileNameForIndex(1, true));
-  addMenuItem(menu, 'sieci dróg wodnych w Europie', getSlideFileNameForIndex(3, true));
-  addMenuItem(menu, 'Kanał Mazurski', getSlideFileNameForIndex(10, true));
-  addMenuItem(menu, 'historia i tożsamość', getSlideFileNameForIndex(25, true));
-  addMenuItem(menu, 'analiza dostępności', getSlideFileNameForIndex(32, true));
-  addMenuItem(menu, 'analiza percepcyjna', getSlideFileNameForIndex(37, true));
-  addMenuItem(menu, 'architektura pogranicza', getSlideFileNameForIndex(43, true));
-  addMenuItem(menu, 'wnioski', getSlideFileNameForIndex(50, true));
-  addMenuItem(menu, 'szlak turystyki angażującej', getSlideFileNameForIndex(59, true));
-  addMenuItem(menu, 'kontakt', getSlideFileNameForIndex(86, true));
-  addMenuFooter(menu, "Alicja Maculewicz");
+  addMenuItem(menu, 'sieci dróg wodnych w Europie', 'sieci', 3);
+  addMenuItem(menu, 'Kanał Mazurski', 'kanal', 10);
+  addMenuItem(menu, 'historia i tożsamość', 'historia', 25);
+  addMenuItem(menu, 'analiza dostępności', 'analizadost', 32);
+  addMenuItem(menu, 'analiza percepcyjna', 'analizaperc', 37);
+  addMenuItem(menu, 'architektura pogranicza', 'archipogr', 43);
+  addMenuItem(menu, 'śluzy', 'sluzy', 47);
+  addMenuItem(menu, 'wnioski', 'wnioski', 50);
+  addMenuItem(menu, 'szlak turystyki angażującej', 'szlak', 59);
+  addMenuItem(menu, 'kontakt', 'kontakt', 86);
+  addMenuFooter(menu, "© Alicja Maculewicz 2020");
 }
 
 
@@ -194,17 +224,84 @@ function createCssStyles() {
   z-index: 1;
 }
 
+.menuItem {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+  background-repeat: no-repeat !important;
+  background-size: 100% !important;
+  margin: 0px 5px;
+}
+
+.menuItem .icon.sieci {
+  background: url('image/custom/ikonki.png') 0px 0px;
+}
+
+.menuItem .icon.kanal {
+  background: url('image/custom/ikonki.png') 0px -36px;
+}
+
+.menuItem .icon.historia {
+  background: url('image/custom/ikonki.png') 0px -72px;
+}
+
+.menuItem .icon.analizadost {
+  background: url('image/custom/ikonki.png') 0px -108px;
+}
+
+.menuItem .icon.analizaperc {
+  background: url('image/custom/ikonki.png') 0px -144px;
+}
+
+.menuItem .icon.archipogr {
+  background: url('image/custom/ikonki.png') 0px -180px;
+}
+
+.menuItem .icon.sluzy {
+  background: url('image/custom/ikonki.png') 0px -216px;
+}
+
+.menuItem .icon.wnioski {
+  background: url('image/custom/ikonki.png') 0px -252px;
+}
+
+.menuItem .icon.szlak {
+  background: url('image/custom/ikonki.png') 0px -288px;
+}
+
+.menuItem .icon.kontakt {
+  background: url('image/custom/ikonki.png') 0px -324px;
+}
+
+.menuFooter .icon.ala {
+  background: url('image/custom/ikonki.png') 0px -360px;
+}
+
 .menuFooter {
   position: fixed;
   top: calc(100vh - 56px);
   left: 0px;
-  width: calc(100% - 60px);
-  line-height: 56px;
-  padding: 0px 10px 10px 50px; 
-  background-color: rgb(0, 0, 0, 0.1);
+  width: calc(100% - 10px);
+  height: 56px;
+  padding: 0px 10px 10px 0px; 
+  background-color: rgb(200, 200, 200, 0.1);
   border-top: 1px solid rgb(180, 180, 180, 1.0);
   font-family: Myriad Pro;
-  font-size: 22px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.menuFooterContent {
+  display: flex;
+  align-items: center;
+}
+
+.menuFooter .menuFooterContent p {
+  line-height: 56px;
 }
 
 .menuHeader {
@@ -216,8 +313,8 @@ function createCssStyles() {
   width: calc(100% - 60px);
   height: 45px;
   line-height: 32px;
-  padding: 10px 10px 0px 50px; 
-  background-color: rgb(0, 0, 0, 0.1);
+  padding: 10px 10px 0px 46px; 
+  background-color: rgb(160, 160, 160, 0.1);
   border-bottom: 1px solid rgb(180, 180, 180, 1.0);
   z-index: 1;
 }
@@ -232,8 +329,8 @@ function createCssStyles() {
   left: 0px;
   height: 100%;
   min-width: 10%;
-  width: 240px;
-  padding: 60px 10px 10px 50px;
+  width: 280px;
+  padding: 60px 10px 10px 0px;
   border-right: 1px solid rgb(180, 180, 180, 1.0);
   background-color: rgb(255, 255, 255, 0.5);
   backdrop-filter: blur(7px);
@@ -272,6 +369,16 @@ document.addEventListener("DOMContentLoaded", function (event) {
 });
 
 window.addEventListener('load', function (event) {
+  // invaliadate cache
+  window.applicationCache.addEventListener('updateready', function (e) {
+    if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+      window.applicationCache.swapCache();
+      if (confirm('A new version of this site is available. Load it?')) {
+        window.location.reload();
+      }
+    }
+  }, false);
+
   document.body.style['display'] = '';
   resize(false);
   window.scrollTo(0, 0);
