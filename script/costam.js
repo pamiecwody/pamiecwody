@@ -182,7 +182,7 @@ function addMenuFooter(menuElement, text) {
   textElement.innerText = text;
 }
 
-function addMenuItem(menuElement, text, iconClassName, slideIndex) {
+function addMenuItem(menuElement, text, iconClassName, slideIndex, nextMenuItemSlideIndex) {
   var menuItem = createElement(menuElement.querySelector('.menuContent'), 'a');
   menuItem.className = 'menuItem';
   menuItem.href = getSlideFileNameForIndex(slideIndex);
@@ -193,9 +193,13 @@ function addMenuItem(menuElement, text, iconClassName, slideIndex) {
 
   var menuItemIcon = createElement(menuItem, 'div');
   menuItemIcon.className = 'icon ' + iconClassName;
-
   var textElement = createElement(menuItem, 'div');
   textElement.innerText = text;
+
+  var currentSlideIndex = getCurrentSlideIndex();
+  if (currentSlideIndex >= slideIndex && currentSlideIndex < nextMenuItemSlideIndex) {
+    textElement.style['font-weight'] = 'bold';
+  }
 
   return menuItem;
 }
@@ -207,16 +211,16 @@ function createMenu(additionalContentElement) {
   var menuContent = createElement(menu, 'div');
   menuContent.className = 'menuContent';
   createHamburgerButton(additionalContentElement, menu);
-  addMenuItem(menu, 'sieci dróg wodnych w Europie', 'sieci', 3);
-  addMenuItem(menu, 'Kanał Mazurski', 'kanal', 10);
-  addMenuItem(menu, 'historia i tożsamość', 'historia', 25);
-  addMenuItem(menu, 'analiza dostępności', 'analizadost', 32);
-  addMenuItem(menu, 'analiza percepcyjna', 'analizaperc', 37);
-  addMenuItem(menu, 'architektura pogranicza', 'archipogr', 43);
-  addMenuItem(menu, 'śluzy', 'sluzy', 47);
-  addMenuItem(menu, 'wnioski', 'wnioski', 50);
-  addMenuItem(menu, 'szlak turystyki angażującej', 'szlak', 59);
-  addMenuItem(menu, 'kontakt', 'kontakt', 86);
+  addMenuItem(menu, 'sieci dróg wodnych w Europie', 'sieci', 3, 10);
+  addMenuItem(menu, 'Kanał Mazurski', 'kanal', 10, 25);
+  addMenuItem(menu, 'historia i tożsamość', 'historia', 25, 32);
+  addMenuItem(menu, 'analiza dostępności', 'analizadost', 32, 37);
+  addMenuItem(menu, 'analiza percepcyjna', 'analizaperc', 37, 43);
+  addMenuItem(menu, 'architektura pogranicza', 'archipogr', 43, 47);
+  addMenuItem(menu, 'śluzy', 'sluzy', 47, 50);
+  addMenuItem(menu, 'wnioski', 'wnioski', 50, 59);
+  addMenuItem(menu, 'szlak turystyki angażującej', 'szlak', 59, 86);
+  addMenuItem(menu, 'kontakt', 'kontakt', 86, 87);
   addMenuFooter(menu, "© Alicja Maculewicz 2020");
   return menu;
 }
@@ -414,7 +418,7 @@ function createCssStyles() {
   font-size: 18px;
   line-height: 3.0;
   height: 100%;
-  min-width: 290px;
+  min-width: 300px;
   background-color: rgb(255, 255, 255, 0.5);
   backdrop-filter: blur(7px);
   pointer-events: all;
