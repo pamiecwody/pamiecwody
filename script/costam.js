@@ -132,6 +132,8 @@ function createMenu() {
   menu.className = 'sideMenu';
   menu.style['visibility'] = 'hidden';
   menu.style['opacity'] = '0';
+  var menuContent = createElement(menu, 'div');
+  menuContent.className = 'menuContent';
   createHamburgerButton(menu);
   return menu;
 }
@@ -154,7 +156,7 @@ function addMenuHeader(menuElement, text) {
   link.innerText = text;
 }
 
-function addMenuFooter(menuElement, name, year) {
+function addMenuFooter(menuElement, text) {
   var footer = createElement(menuElement, 'div');
   footer.className = 'menuFooter';
 
@@ -164,12 +166,12 @@ function addMenuFooter(menuElement, name, year) {
   var menuItemIcon = createElement(footerContent, 'div');
   menuItemIcon.className = 'icon ala';
 
-  var text = createElement(footerContent, 'p');
-  text.innerText = name;
+  var textElement = createElement(footerContent, 'p');
+  textElement.innerText = text;
 }
 
 function addMenuItem(menuElement, text, iconClassName, slideIndex) {
-  var menuItem = createElement(menuElement, 'p');
+  var menuItem = createElement(menuElement.querySelector('.menuContent'), 'p');
   menuItem.className = 'menuItem';
 
   var menuItemIcon = createElement(menuItem, 'div');
@@ -288,11 +290,12 @@ function createCssStyles() {
   width: calc(100% - 10px);
   height: 56px;
   padding: 0px 10px 10px 0px; 
-  background-color: rgb(200, 200, 200, 0.1);
+  background-color: rgb(250, 250, 250, 0.5);
   border-top: 1px solid rgb(180, 180, 180, 1.0);
   font-family: Myriad Pro;
   font-size: 12px;
   text-transform: uppercase;
+  z-index: 0;
 }
 
 .menuFooterContent {
@@ -314,7 +317,7 @@ function createCssStyles() {
   height: 45px;
   line-height: 32px;
   padding: 10px 10px 0px 46px; 
-  background-color: rgb(160, 160, 160, 0.1);
+  background-color: rgb(200, 200, 200, 0.1);
   border-bottom: 1px solid rgb(180, 180, 180, 1.0);
   z-index: 1;
 }
@@ -330,10 +333,16 @@ function createCssStyles() {
   height: 100%;
   min-width: 10%;
   width: 280px;
-  padding: 60px 10px 10px 0px;
+  padding: 55px 0px 0px 0px;
   border-right: 1px solid rgb(180, 180, 180, 1.0);
   background-color: rgb(255, 255, 255, 0.5);
   backdrop-filter: blur(7px);
+}
+
+.menuContent {
+  overflow-y: auto;
+  height: calc(100% - 120px);
+  padding: 0px 10px 10px 0px;
 }
 `);
   // menu.style['display']='flex';
