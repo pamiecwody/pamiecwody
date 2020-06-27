@@ -34,6 +34,13 @@ function resize(haxx) {
   bodyElement.style['transform'] = 'translateX(' + xOffset + 'px) translateY(' + yOffset + 'px) scale(' + scale + ')';
 }
 
+function getUrlParameter(location, name) {
+  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+  var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+  var results = regex.exec(location);
+  return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
 function addCssStyle(css) {
   var element = document.querySelector('style');
   if (!element) {
@@ -54,8 +61,12 @@ function getCurrentSlideIndex() {
   return parseInt(getCurrentSlideFileName().match(/(\d+)\.xhtml$/));
 }
 
-function getSlideFileNameForIndex(slideIndex) {
-  return window.location.pathname.replace(/(\d+)\.xhtml$/, slideIndex + '.xhtml');
+function getSlideFileNameForIndex(slideIndex, fromMenu) {
+  var path = window.location.pathname.replace(/(\d+)\.xhtml$/, slideIndex + '.xhtml');
+  if (fromMenu) {
+    path += '?openSideMenu=true';
+  }
+  return path;
 }
 
 function switchSlide(offset) {
@@ -93,15 +104,23 @@ function createHamburgerButton(menu) {
   menu.style['transition'] = 'visibility 0.1s linear, opacity 0.1s linear';
   button.addEventListener("click", function () {
     if (menu.style['opacity'] == '0') {
-
-      menu.style['visibility'] = '';
-      menu.style['opacity'] = '1';
-    }
-    else {
-      menu.style['opacity'] = '0';
-      menu.style['visibility'] = 'hidden';
+      openSideMenu();
+    } else {
+      closeSideMenu();
     }
   });
+}
+
+function openSideMenu() {
+  var menu = document.querySelector('.sideMenu');
+  menu.style['visibility'] = '';
+  menu.style['opacity'] = '1';
+}
+
+function closeSideMenu() {
+  var menu = document.querySelector('.sideMenu');
+  menu.style['opacity'] = '0';
+  menu.style['visibility'] = 'hidden';
 }
 
 function createMenu() {
@@ -140,16 +159,17 @@ function addMenuItem(menuElement, text, url) {
 function addSideMenu() {
   var menu = createMenu();
   addMenuHeader(menu, 'pamięć wody');
-  addMenuItem(menu, 'start', getSlideFileNameForIndex(1));
-  addMenuItem(menu, 'sieci dróg wodnych w Europie', getSlideFileNameForIndex(3));
-  addMenuItem(menu, 'Kanał Mazurski', getSlideFileNameForIndex(10));
-  addMenuItem(menu, 'historia i tożsamość', getSlideFileNameForIndex(25));
-  addMenuItem(menu, 'analiza dostępności', getSlideFileNameForIndex(32));
-  addMenuItem(menu, 'analiza percepcyjna', getSlideFileNameForIndex(37));
-  addMenuItem(menu, 'architektura pogranicza', getSlideFileNameForIndex(43));
-  addMenuItem(menu, 'wnioski', getSlideFileNameForIndex(50));
-  addMenuItem(menu, 'szlak turystyki angażującej', getSlideFileNameForIndex(59));
-  addMenuItem(menu, 'kontakt', getSlideFileNameForIndex(86));
+  addMenuItem(menu, 'start', getSlideFileNameForIndex(1, true));
+  addMenuItem(menu, 'sieci dróg wodnych w Europie', getSlideFileNameForIndex(3, true));
+  addMenuItem(menu, 'Kanał Mazurski', getSlideFileNameForIndex(10, true));
+  addMenuItem(menu, 'historia i tożsamość', getSlideFileNameForIndex(25, true));
+  addMenuItem(menu, 'analiza dostępności', getSlideFileNameForIndex(32, true));
+  addMenuItem(menu, 'analiza percepcyjna', getSlideFileNameForIndex(37, true));
+  addMenuItem(menu, 'architektura pogranicza', getSlideFileNameForIndex(43, true));
+  addMenuItem(menu, 'wnioski', getSlideFileNameForIndex(50, true));
+  addMenuItem(menu, 'szlak turystyki angażującej', getSlideFileNameForIndex(59, true));
+  addMenuItem(menu, 'kontakt', getSlideFileNameForIndex(86, true));
+  addMenuFooter(menu, "Alicja Maculewicz");
 }
 
 
@@ -176,10 +196,14 @@ function createCssStyles() {
 
 .menuFooter {
   position: fixed;
-  bottom: 0px;
+  top: calc(100vh - 56px);
   left: 0px;
+  width: calc(100% - 60px);
+  line-height: 56px;
+  padding: 0px 10px 10px 50px; 
+  background-color: rgb(0, 0, 0, 0.1);
+  border-top: 1px solid rgb(180, 180, 180, 1.0);
   font-family: Myriad Pro;
-  font-weight: light;
   font-size: 22px;
 }
 
@@ -189,12 +213,11 @@ function createCssStyles() {
   font-size: 22px;
   top: 0px;
   left: 0px;
-  width: 240px;
+  width: calc(100% - 60px);
   height: 45px;
   line-height: 32px;
   padding: 10px 10px 0px 50px; 
   background-color: rgb(0, 0, 0, 0.1);
-  border-right: 1px solid rgb(180, 180, 180, 1.0);
   border-bottom: 1px solid rgb(180, 180, 180, 1.0);
   z-index: 1;
 }
@@ -254,6 +277,9 @@ window.addEventListener('load', function (event) {
   window.scrollTo(0, 0);
   if (!isLocal()) {
     addSideMenu();
+    if (getUrlParameter(window.location.search, 'openSideMenu') === 'true') {
+      openSideMenu();
+    }
   }
 });
 window.addEventListener('resize', function (event) {
