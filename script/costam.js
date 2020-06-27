@@ -464,6 +464,59 @@ function createCssStyles() {
   font-size: 44px;
   transition: all 0.2s;
 }
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 800px) {
+
+    .hamburgerButton {
+      left: 15px;
+      font-size: 120px;
+    }
+
+    .menuHeader {
+      font-size: 60px;
+      height: 170px;
+      line-height: 170px;
+      padding-left: 160px; 
+    }
+
+    .sideMenu {
+      min-width: 55%;
+      background-color: rgb(255, 255, 255, 0.8);
+    }
+    
+    .menuItem .icon {
+      transform: scale(3.5);
+      margin: 0px 50px 0px 50px;
+    }
+
+    .menuContent {
+      font-size: 45px;
+    }
+
+    .arrowButton {
+      width: 150px;
+      height: 150px;
+      border-radius: 150px;
+      line-height: 150px;
+      font-size: 80px;
+      margin: 40px 0px 40px 0px;
+    }
+    
+    .arrowButton:hover {
+      width: 200px;
+      height: 200px;
+      line-height: 200px;
+      font-size: 100px;
+    }
+}
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 800px) {
+
+}
 `);
   // menu.style['display']='flex';
   // menu.style['justify-content']='center';
