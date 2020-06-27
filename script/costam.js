@@ -310,7 +310,7 @@ function createCssStyles() {
   font-size: 22px;
   top: 0px;
   left: 0px;
-  width: calc(100% - 60px);
+  width: calc(100% - 55px);
   height: 45px;
   line-height: 32px;
   padding: 10px 10px 0px 46px; 
