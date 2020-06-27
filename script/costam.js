@@ -275,12 +275,20 @@ function setPageTitle() {
   document.title = 'Pamięć wody';
 }
 
-function setFavicon() {
-  var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+function addPngFaviconLink(size) {
+  var link = document.createElement('link');
+  link.type = 'image/png';
+  link.rel = 'icon';
+  link.href = 'favicon-' + size + 'x' + size + '.png';
+  link.sizes = '' + size + 'x' + size;
+  document.getElementsByTagName('head')[0].appendChild(link);
+}
+
+function addIcoFaviconLink() {
+  var link = document.createElement('link');
   link.type = 'image/x-icon';
   link.rel = 'icon';
   link.href = 'favicon.ico';
-
   document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -475,7 +483,11 @@ document.onkeyup = function (e) {
 }
 
 document.addEventListener("DOMContentLoaded", function (event) {
-  setFavicon();
+  addIcoFaviconLink();
+  addPngFaviconLink(16);
+  addPngFaviconLink(32);
+  addPngFaviconLink(96);
+  addPngFaviconLink(192);
   setPageTitle();
   createCssStyles();
   var body = document.body;
