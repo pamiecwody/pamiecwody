@@ -344,6 +344,7 @@ function createCssStyles() {
 }
 
 .hamburgerButton {
+  user-select: none;
   position: fixed;
   font-size: 24px;
   top: 5px;
@@ -360,6 +361,7 @@ function createCssStyles() {
 }
 
 .menuItem {
+  user-select: none;
   display: flex;
   align-items: center;
 }
@@ -417,6 +419,7 @@ function createCssStyles() {
 }
 
 .menuFooter {
+  user-select: none;
   padding: 0px 10px 10px 0px; 
   background-color: rgb(250, 250, 250, 0.5);
   border: 1px solid rgb(180, 180, 180, 1.0);
@@ -436,6 +439,7 @@ function createCssStyles() {
 }
 
 .menuHeader {
+  user-select: none;
   font-family: Frank Ruhl Libre Black;
   font-size: 22px;
   height: 45px;
@@ -476,6 +480,7 @@ function createCssStyles() {
 }
 
 .arrowButton {
+  user-select: none;
   color: white;
   width: 50px;
   height: 50px;
