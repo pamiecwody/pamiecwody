@@ -1,6 +1,7 @@
 var scrollableSlides = [12, 45, 61, 63];
 var firstSlideIndex = 1;
 var lastSlideIndex = 86;
+var urlHash = '';
 
 function resize(haxx) {
   var bodyElement = document.body;
@@ -39,7 +40,7 @@ function resize(haxx) {
 function getUrlParameter(name) {
   name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
   var regex = new RegExp('[#&]' + name + '=([^&#]*)');
-  var results = regex.exec(window.location.hash);
+  var results = regex.exec(urlHash);
   return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
@@ -69,11 +70,11 @@ function getSlideFileNameForIndex(slideIndex) {
 }
 
 
-function switchSlide(offset) {
-  openSlide(getCurrentSlideIndex() + offset);
+function switchSlide(offset, buttonId) {
+  openSlide(getCurrentSlideIndex() + offset, buttonId);
 }
 
-function openSlide(index, button) {
+function openSlide(index, buttonId) {
   if (slideExist(index)) {
     var path = getSlideFileNameForIndex(index);
     var queryParams = [];
@@ -84,6 +85,9 @@ function openSlide(index, button) {
       queryParams.push('showButtons=true');
     } else {
       queryParams.push('showButtons=false');
+    }
+    if (buttonId !== undefined) {
+      queryParams.push('button=' + buttonId);
     }
     if (queryParams.length > 0) {
       path += '#';
@@ -222,12 +226,15 @@ function createMenu(additionalContentElement) {
   return menu;
 }
 
-function createArrowButton(buttonContainer, text, className, slideOffset) {
+function createArrowButton(buttonContainer, text, buttonId, slideOffset) {
   var button = createElement(buttonContainer, 'div');
-  button.className = 'arrowButton ' + className;
+  button.className = 'arrowButton ' + buttonId;
+  if (getUrlParameter('button') === buttonId) {
+    button.classList.add('wasClicked');
+  }
   button.innerText = text;
   button.onclick = function () {
-    switchSlide(slideOffset);
+    switchSlide(slideOffset, buttonId);
   }
 
   var currentSlideIndex = getCurrentSlideIndex();
@@ -237,18 +244,22 @@ function createArrowButton(buttonContainer, text, className, slideOffset) {
   if (slideOffset === 1 && currentSlideIndex === lastSlideIndex) {
     button.style['visibility'] = 'hidden';
   }
+
+  return button;
 }
 
 function createArrowButtons(additionalContent) {
   var buttonContainer = createElement(additionalContent, 'div');
   buttonContainer.className = 'buttonContainer';
   
-  createArrowButton(buttonContainer, '❮', 'left', -1);
-  createArrowButton(buttonContainer, '❯', 'right', 1);
+  var buttonLeft = createArrowButton(buttonContainer, '❮', 'left', -1);
+  var buttonRight = createArrowButton(buttonContainer, '❯', 'right', 1);
 
   var timer = null;
   document.addEventListener("mousemove", function () {
     buttonContainer.style['opacity'] = '1';
+    buttonLeft.classList.remove('wasClicked');
+    buttonRight.classList.remove('wasClicked');
     if (timer != null) {
       clearTimeout(timer);
     }
@@ -260,13 +271,14 @@ function createArrowButtons(additionalContent) {
   });
 
   var showButtons = getUrlParameter('showButtons');
-  if (showButtons === 'false') {
+  var clickedButtonId = getUrlParameter('button');
+  if (showButtons === 'false' && clickedButtonId === null) {
     buttonContainer.style['opacity'] = '0';
-  } else if (showButtons === 'true') {
+  } else if (showButtons === 'true' && clickedButtonId === null) {
     timer = setTimeout(function () {
       buttonContainer.style['opacity'] = '0';
     }, 5000);
-  } else {
+  } else  if (clickedButtonId === null) {
     timer = setTimeout(function () {
       buttonContainer.style['opacity'] = '0';
     }, 1000);
@@ -462,7 +474,7 @@ function createCssStyles() {
   cursor: pointer;
 }
 
-.arrowButton:hover{
+.arrowButton.wasClicked, .arrowButton:hover{
   width: 70px;
   height: 70px;
   margin: 30px 5px 10px 5px;
@@ -562,6 +574,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 });
 
 window.addEventListener('load', function (event) {
+  urlHash = window.location.hash;
+  window.location.hash = '';
   document.body.style['display'] = '';
   resize(false);
   window.scrollTo(0, 0);
