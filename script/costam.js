@@ -251,9 +251,23 @@ function createArrowButton(buttonContainer, text, buttonId, slideOffset) {
 function createArrowButtons(additionalContent) {
   var buttonContainer = createElement(additionalContent, 'div');
   buttonContainer.className = 'buttonContainer';
-  
+
   var buttonLeft = createArrowButton(buttonContainer, '❮', 'left', -1);
   var buttonRight = createArrowButton(buttonContainer, '❯', 'right', 1);
+
+  var mouseOverButton = false;
+  buttonLeft.addEventListener('mouseover', function () {
+    mouseOverButton = true;
+  });
+  buttonLeft.addEventListener('mouseout', function () {
+    mouseOverButton = false;
+  });
+  buttonRight.addEventListener('mouseover', function () {
+    mouseOverButton = true;
+  });
+  buttonRight.addEventListener('mouseout', function () {
+    mouseOverButton = false;
+  });
 
   var timer = null;
   document.addEventListener("mousemove", function () {
@@ -263,11 +277,13 @@ function createArrowButtons(additionalContent) {
     if (timer != null) {
       clearTimeout(timer);
     }
-    timer = setTimeout(function () {
-      if (buttonContainer.style['opacity'] === '1') {
-        buttonContainer.style['opacity'] = '0';
-      }
-    }, 5000);
+    if (mouseOverButton == false) {
+      timer = setTimeout(function () {
+        if (buttonContainer.style['opacity'] === '1') {
+          buttonContainer.style['opacity'] = '0';
+        }
+      }, 5000);
+    }
   });
 
   var showButtons = getUrlParameter('showButtons');
@@ -278,7 +294,7 @@ function createArrowButtons(additionalContent) {
     timer = setTimeout(function () {
       buttonContainer.style['opacity'] = '0';
     }, 5000);
-  } else  if (clickedButtonId === null) {
+  } else if (clickedButtonId === null) {
     timer = setTimeout(function () {
       buttonContainer.style['opacity'] = '0';
     }, 1000);
@@ -536,9 +552,6 @@ function createCssStyles() {
 
 }
 `);
-  // menu.style['display']='flex';
-  // menu.style['justify-content']='center';
-  // menu.style['align-items']='center';
 }
 
 document.onkeyup = function (e) {
