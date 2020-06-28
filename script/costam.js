@@ -36,8 +36,8 @@ function resize(haxx) {
 
 function getUrlParameter(name) {
   name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-  var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-  var results = regex.exec(window.location.search);
+  var regex = new RegExp('[#&]' + name + '=([^&#]*)');
+  var results = regex.exec(window.location.hash);
   return results === null ? null : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
@@ -84,16 +84,10 @@ function openSlide(index, button) {
       queryParams.push('showButtons=false');
     }
     if (queryParams.length > 0) {
-      path += '?';
+      path += '#';
       path += queryParams.join("&");
     }
     window.open(path, '_self');
-  }
-}
-
-function addQuestionMarkToPath(path) {
-  if (path.indexOf('?') === -1) {
-    return path += '?';
   }
 }
 
