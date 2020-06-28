@@ -1,4 +1,6 @@
 var scrollableSlides = [12, 45, 61, 63];
+var firstSlideIndex = 1;
+var lastSlideIndex = 86;
 
 function resize(haxx) {
   var bodyElement = document.body;
@@ -97,7 +99,7 @@ function isButtonContainerVisible() {
 }
 
 function slideExist(slideIndex) {
-  return slideIndex > 0 && slideIndex <= 86;
+  return slideIndex >= firstSlideIndex && slideIndex <= lastSlideIndex;
 }
 
 function createElement(parentElement, tagName) {
@@ -227,11 +229,20 @@ function createArrowButton(buttonContainer, text, className, slideOffset) {
   button.onclick = function () {
     switchSlide(slideOffset);
   }
+
+  var currentSlideIndex = getCurrentSlideIndex();
+  if (slideOffset === -1 && currentSlideIndex === firstSlideIndex) {
+    button.style['visibility'] = 'hidden';
+  }
+  if (slideOffset === 1 && currentSlideIndex === lastSlideIndex) {
+    button.style['visibility'] = 'hidden';
+  }
 }
 
 function createArrowButtons(additionalContent) {
   var buttonContainer = createElement(additionalContent, 'div');
   buttonContainer.className = 'buttonContainer';
+  
   createArrowButton(buttonContainer, '❮', 'left', -1);
   createArrowButton(buttonContainer, '❯', 'right', 1);
 
