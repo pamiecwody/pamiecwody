@@ -199,6 +199,7 @@ function addMenuItem(menuElement, text, iconClassName, slideIndex, nextMenuItemS
   var currentSlideIndex = getCurrentSlideIndex();
   if (currentSlideIndex >= slideIndex && currentSlideIndex < nextMenuItemSlideIndex) {
     textElement.style['font-weight'] = 'bold';
+    document.title += ' - ' + text;
   }
 
   return menuItem;
